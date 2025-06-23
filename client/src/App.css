@@ -5,7 +5,8 @@ body {
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: center; /* Horizontal center */
+  justify-content: center;
+  /* Horizontal center */
 }
 
 .container {
@@ -33,7 +34,13 @@ body {
 
 h1 {
   text-align: center;
-  color: #222;
+  color: #1a3c63;
+}
+
+h3 {
+  text-align: center;
+  color: #3f5873;
+  font-weight: normal;
 }
 
 textarea {
@@ -44,28 +51,41 @@ textarea {
   border-radius: 8px;
   font-family: monospace;
   resize: vertical;
+  background: #f9fbfc;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #4da3ff;
+  box-shadow: 0 0 0 3px rgba(77, 163, 255, 0.2);
 }
 
 .comment-entry {
-  background: #f1f1f1;
-  border-left: 4px solid #0077cc;
-  padding: 0.5rem;
+  background: #e8f0fe;
+  border-left: 4px solid #4285f4;
+  padding: 0.6rem 0.8rem;
   margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  border-radius: 4px;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  color: #1a3c63;
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
 }
 
 button {
   padding: 0.75rem 1.5rem;
-  margin-bottom: 0.75rem;
+  margin: 0.75rem;
   border: none;
-  background-color: #0066cc;
+  background: linear-gradient(to right, #0077cc, #005fa3);
   color: white;
   font-weight: bold;
   cursor: pointer;
   border-radius: 6px;
-  transition: background 0.3s ease;
-  align-self: flex-end; /* Aligns the button to the right inside the container */
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 button:disabled {

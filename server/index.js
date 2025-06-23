@@ -77,10 +77,13 @@ app.post('/api/data', async (req, res) => {
         const { data } = req.body;
         const { prompt, comment = '', history = [] } = data;
 
+        const currentInput = comment || prompt;
+
         const requestBody = {
             contents: [
                 { role: 'model', parts: [{ text: generateSystemPrompt() }] },
-                ...history
+                ...history,
+                { role: 'user', parts: [{ text: currentInput }] }
             ],
         };
 
@@ -106,7 +109,7 @@ app.post('/api/data', async (req, res) => {
         // Append the user's latest input (prompt or comment)
         const updatedHistory = [
             ...history,
-            { role: 'user', parts: [{ text: comment || prompt }] },
+            { role: 'user', parts: [{ text: currentInput }] },
             { role: 'model', parts: [{ text: responseText }] }
         ];
 

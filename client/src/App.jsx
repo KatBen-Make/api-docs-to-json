@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { ContentCopy } from '@mui/icons-material';
 import './App.css';
 
@@ -9,6 +9,12 @@ export default function App() {
   const [copied, setCopied] = useState(false);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
+
+
+  useEffect(() => {
+  setHistory([]);
+  setResponse('');
+}, []);
 
   const sendPrompt = async () => {
     setLoading(true);
@@ -99,9 +105,11 @@ export default function App() {
             onChange={(e) => setPrompt(e.target.value)}
             rows={6}
           />
-          <button onClick={sendPrompt} disabled={loading}>
-            {loading ? 'Sending...' : 'Send Prompt'}
-          </button>
+          <div className="button-wrapper">
+            <button onClick={sendPrompt} disabled={loading}>
+              {loading ? 'Sending...' : 'Send Prompt'}
+            </button>
+          </div>
           {/* Show previous user comments */}
           <div className="conversation-history">
             {history
@@ -117,9 +125,15 @@ export default function App() {
             onChange={(e) => setComment(e.target.value)}
             rows={2}
           />
-          <button onClick={sendComment} disabled={loading || !comment}>
-            {loading ? 'Sending...' : 'Send Comment'}
-          </button>
+          <div className="button-wrapper">
+            <button onClick={() => setHistory([])} style={{ marginLeft: '1rem' }}>
+              Clear History
+            </button>
+            
+            <button onClick={sendComment} disabled={loading || !comment}>
+              {loading ? 'Sending...' : 'Send Comment'}
+            </button>
+          </div>
         </div>
 
         {response && (
