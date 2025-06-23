@@ -18,7 +18,10 @@ const __dirname = dirname(__filename);
 
 app.use(express.static(path.join(__dirname)));
 
-const API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+// Get Gemini module from environment variable or use default
+const geminiModule = process.env.GEMINI_MODULE || 'gemini-2.0-flash';
+
+const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModule}:generateContent`;
 
 // Basic error handling function
 function handleErrors(response) {
@@ -72,38 +75,17 @@ function generateSystemPrompt() {
 app.post('/api/data', async (req, res) => {
     try {
         const { data } = req.body;  // Get the "data" object
-        const { prompt, comment = "return json" } = data;    // Extract "prompt" from the "data" object
+        const { prompt, comment = "return json", history = [] } = data;
 
-
+        // System prompt (context) as the first message
         const requestBody = {
             contents: [
-                {
-                    role: 'model',
-                    parts: [
-                        {
-                            text: generateSystemPrompt()
-                        },
-                    ],
-                },
-                {
-                    role: "user",
-                    parts: [
-                        {
-                            text: prompt
-                        },
-                    ],
-                },
-                { //add a new object to the contents array
-                    role: "user",
-                    parts: [
-                        {
-                            text: "convert to JSON" //comment,
-                        },
-                    ],
-                },
+                { role: 'model', parts: [{ text: generateSystemPrompt() }] },
+                ...(Array.isArray(req.body.data.history) ? req.body.data.history : []),
+                { role: 'user', parts: [{ text: prompt }] },
+                { role: 'user', parts: [{ text: "convert to JSON" }] },
             ],
         };
-        console.log("Request Body:", JSON.stringify(requestBody, null, 2));
 
         const requestOptions = {
             method: 'POST',
@@ -114,8 +96,6 @@ app.post('/api/data', async (req, res) => {
             body: JSON.stringify(requestBody),
         };
 
-
-
         const response = await fetch(API_ENDPOINT, requestOptions)
             .then(handleErrors);
 
@@ -124,13 +104,18 @@ app.post('/api/data', async (req, res) => {
 
         // Extract the text from the response
         let responseText = "";
-        if (result && result.candidates && result.candidates[0] &&
-            result.candidates[0].content && result.candidates[0].content.parts &&
-            result.candidates[0].content.parts[0] && result.candidates[0].content.parts[0].text) {
+        if (result?.candidates?.[0]?.content?.parts?.[0]?.text) {
             responseText = result.candidates[0].content.parts[0].text;
         }
-        res.json({ response: responseText }); // Send only the extracted text
 
+        // Append the model response to return updated history
+        const updatedHistory = [
+            ...history,
+            { role: 'user', parts: [{ text: prompt }] },
+            { role: 'model', parts: [{ text: responseText }] }
+        ];
+
+        res.json({ response: responseText, history: updatedHistory });
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: error.message || 'Internal server error' });

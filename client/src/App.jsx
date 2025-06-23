@@ -7,18 +7,36 @@ export default function App() {
   const [comment, setComment] = useState('');
   const [response, setResponse] = useState('');
   const [copied, setCopied] = useState(false);
+  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const sendPrompt = async () => {
     setLoading(true);
+
+    const payload = {
+      data: {
+        prompt,
+        comment,
+        history,
+      },
+    };
+    console.log('📤 Sending ');
+    console.log('📤 Sending to API:', JSON.stringify(payload, null, 2));
     try {
       const res = await fetch('/api/data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: { prompt, comment } }),
+        body: JSON.stringify({ data: { prompt, comment, history } }),
       });
       const json = await res.json();
       setResponse(json.response);
+
+      // Append new user + model messages to history
+      setHistory([
+        ...history,
+        { role: 'user', parts: [{ text: prompt }] },
+        { role: 'model', parts: [{ text: json.response }] }
+      ]);
     } catch (error) {
       setResponse(`Error: ${error.message}`);
     }
@@ -43,38 +61,39 @@ export default function App() {
     <div className="container">
       <h1>Generate Make JSON</h1>
       <h3>Convert API documentation to MAKE mappable parameters with Gemini AI</h3>
-
-      <textarea
-        placeholder="Paste parameters from API Documentation here..."
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        rows={6}
-      />
-
-      <textarea
-        placeholder="Add any comments here..."
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        rows={2}
-      />
-
-      <button onClick={sendPrompt} disabled={loading}>
-        {loading ? 'Sending...' : 'Send Prompt'}
-      </button>
-
-      {response && (
-        <div className="response-container">
-          <div className="response-header">
-            <p>Response from Gemini AI:</p>
-            <ContentCopy
-              className={`copy-icon ${copied ? 'copied' : ''}`}
-              onClick={handleCopy}
-              title={copied ? 'Copied!' : 'Copy JSON'}
-            />
-          </div>
-          <pre className="json-display">{prettyResponse}</pre>
+      <div className="flex-layout">
+        {/* Left side: Inputs */}
+        <div className="input-section">
+          <textarea
+            placeholder="Paste parameters from API Documentation here..."
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            rows={6}
+          />
+          <button onClick={sendPrompt} disabled={loading}>
+            {loading ? 'Sending...' : 'Send Prompt'}
+          </button>
+          <textarea
+            placeholder="Add any comments here..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            rows={2}
+          />
         </div>
-      )}
+        {response && (
+          <div className="response-container">
+            <div className="response-header">
+              <p>Response from Gemini AI:</p>
+              <ContentCopy
+                className={`copy-icon ${copied ? 'copied' : ''}`}
+                onClick={handleCopy}
+                title={copied ? 'Copied!' : 'Copy JSON'}
+              />
+            </div>
+            <pre className="json-display">{prettyResponse}</pre>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

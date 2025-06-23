@@ -35,6 +35,7 @@ Create a .env file in the project root:
 ```
 PORT=5000
 API_KEY=your_google_gemini_api_key_here
+GEMINI_MODULE = gemini-2.0-flash
 ```
 🔐 Never commit .env files with secrets to version control.
 
@@ -73,6 +74,6 @@ api-docs-to-json/
 - server/data/internalDocs.md
 
 ### To Do
-- add option for Title case fro labels (Sentence case is default)
+- add option for Title case for labels (Sentence case is default)
 - add option to add successful query to examples
 - add conversation with the AI
