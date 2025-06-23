@@ -74,16 +74,13 @@ function generateSystemPrompt() {
 // Route to interact with the Gemini Pro API
 app.post('/api/data', async (req, res) => {
     try {
-        const { data } = req.body;  // Get the "data" object
-        const { prompt, comment = "return json", history = [] } = data;
+        const { data } = req.body;
+        const { prompt, comment = '', history = [] } = data;
 
-        // System prompt (context) as the first message
         const requestBody = {
             contents: [
                 { role: 'model', parts: [{ text: generateSystemPrompt() }] },
-                ...(Array.isArray(req.body.data.history) ? req.body.data.history : []),
-                { role: 'user', parts: [{ text: prompt }] },
-                { role: 'user', parts: [{ text: "convert to JSON" }] },
+                ...history
             ],
         };
 
@@ -100,18 +97,16 @@ app.post('/api/data', async (req, res) => {
             .then(handleErrors);
 
         const result = await response.json();
-        // console.log("Result Body:", JSON.stringify(result, null, 2));
 
-        // Extract the text from the response
         let responseText = "";
         if (result?.candidates?.[0]?.content?.parts?.[0]?.text) {
             responseText = result.candidates[0].content.parts[0].text;
         }
 
-        // Append the model response to return updated history
+        // Append the user's latest input (prompt or comment)
         const updatedHistory = [
             ...history,
-            { role: 'user', parts: [{ text: prompt }] },
+            { role: 'user', parts: [{ text: comment || prompt }] },
             { role: 'model', parts: [{ text: responseText }] }
         ];
 
@@ -121,6 +116,7 @@ app.post('/api/data', async (req, res) => {
         res.status(500).json({ error: error.message || 'Internal server error' });
     }
 });
+
 
 app.listen(process.env.PORT || 5000, () => {
     console.log(`✅ Microservice listening on port ${process.env.PORT || 5000}`);

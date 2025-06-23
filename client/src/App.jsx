@@ -43,6 +43,35 @@ export default function App() {
     setLoading(false);
   };
 
+  const sendComment = async () => {
+    if (!comment.trim()) return;
+    setLoading(true);
+    const newHistory = [
+      ...history,
+      { role: 'user', parts: [{ text: comment }] }
+    ];
+
+    try {
+      const res = await fetch('/api/data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: { prompt, comment, history: newHistory } }),
+      });
+      const json = await res.json();
+      setResponse(json.response);
+
+      // Update history with new comment and AI reply
+      setHistory([
+        ...newHistory,
+        { role: 'model', parts: [{ text: json.response }] }
+      ]);
+    } catch (error) {
+      setResponse(`Error: ${error.message}`);
+    }
+    setComment('');
+    setLoading(false);
+  };
+
   const handleCopy = () => {
     navigator.clipboard.writeText(response);
     setCopied(true);
@@ -73,13 +102,26 @@ export default function App() {
           <button onClick={sendPrompt} disabled={loading}>
             {loading ? 'Sending...' : 'Send Prompt'}
           </button>
+          {/* Show previous user comments */}
+          <div className="conversation-history">
+            {history
+              .filter(entry => entry.role === 'user' && entry.parts[0]?.text !== prompt)
+              .map((entry, i) => (
+                <div key={i} className="comment-entry">💬 {entry.parts[0]?.text}</div>
+              ))}
+          </div>
+
           <textarea
             placeholder="Add any comments here..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={2}
           />
+          <button onClick={sendComment} disabled={loading || !comment}>
+            {loading ? 'Sending...' : 'Send Comment'}
+          </button>
         </div>
+
         {response && (
           <div className="response-container">
             <div className="response-header">
