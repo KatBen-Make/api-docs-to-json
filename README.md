@@ -74,6 +74,4 @@ api-docs-to-json/
 - server/data/internalDocs.md
 
 ### To Do
-- add option for Title case for labels (Sentence case is default)
 - add option to add successful query to examples
-- add conversation with the AI

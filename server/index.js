@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
@@ -8,6 +9,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
+app.use(cors()); // Enables CORS for all routes
 
 // Middleware to parse JSON bodies
 app.use(express.json());

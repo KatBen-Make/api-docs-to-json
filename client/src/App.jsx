@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ContentCopy } from '@mui/icons-material';
 import './App.css';
 
@@ -12,9 +12,9 @@ export default function App() {
 
 
   useEffect(() => {
-  setHistory([]);
-  setResponse('');
-}, []);
+    setHistory([]);
+    setResponse('');
+  }, []);
 
   const sendPrompt = async () => {
     setLoading(true);
@@ -79,7 +79,8 @@ export default function App() {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(response);
+    let cleanCopy = response.replace(/^```json\s*/, '').replace(/```$/, '');
+    navigator.clipboard.writeText(cleanCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -129,7 +130,7 @@ export default function App() {
             <button onClick={() => setHistory([])} style={{ marginLeft: '1rem' }}>
               Clear History
             </button>
-            
+
             <button onClick={sendComment} disabled={loading || !comment}>
               {loading ? 'Sending...' : 'Send Comment'}
             </button>
