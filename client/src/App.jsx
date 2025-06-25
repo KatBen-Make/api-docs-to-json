@@ -26,8 +26,6 @@ export default function App() {
         history,
       },
     };
-    console.log('📤 Sending ');
-    console.log('📤 Sending to API:', JSON.stringify(payload, null, 2));
     try {
       const res = await fetch('/api/data', {
         method: 'POST',

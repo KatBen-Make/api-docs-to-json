@@ -1,13 +1,13 @@
 # API Docs to JSON (Gemini AI)
 
-This project is a **React + Express** application that lets users paste API documentation and receive structured JSON, powered by **Google's Gemini API**.
+This project is a **React + Express + Vite** application that lets users paste API documentation and receive structured JSON, powered by **Google's Gemini API**. Also using **docker**, **nginx**, **nodemon**.
 
 ---
 
 ## 📦 Tech Stack
 
 - **Frontend**: [React](https://react.dev/), [Vite](https://vitejs.dev/)
-- **Backend**: [Node.js](https://nodejs.org/), [Express](https://expressjs.com/)
+- **Backend**: [Node.js](https://nodejs.org/), [Express](https://expressjs.com/), Docker, Nginx
 - **UI**: [MUI Icons](https://mui.com/material-ui/material-icons/)
 - **AI Model**: [Google Gemini API](https://ai.google.dev/)
 
@@ -39,11 +39,16 @@ GEMINI_MODULE = gemini-2.0-flash
 ```
 🔐 Never commit .env files with secrets to version control.
 
-### 4. Run the app
+### 4. Run the app as dev
 ``` bash
 npm run dev
 ```
 Frontend: http://localhost:5173
+Backend: http://localhost:5000
+
+### 5. In Docker
+Nginx: http://localhost
+Frontend: http://localhost:3000
 Backend: http://localhost:5000
 
 ### ✨ Features
@@ -55,13 +60,47 @@ Backend: http://localhost:5000
 
 ### 📁 Folder Structure
 ``` bash
-api-docs-to-json/
-├── client/          # React frontend (Vite)
-├── server/          # Express backend
-├── data/            # Markdown prompt templates
-├── .env             # Environment variables
-├── package.json     # Project root (concurrent setup)
-└── README.md        # You're here
+api-docs-to-json
+├── .env                          # Environment variables
+├── .gitignore
+├── client                        # React frontend (Vite)
+│   ├── .dockerignore
+│   ├── .gitignore
+│   ├── dist
+│   │   ├── assets
+│   │   └── index.html
+│   ├── Dockerfile
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── node_modules
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   ├── README.md
+│   ├── src
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   └── vite.config.js
+├── docker-compose.yml             # Docker
+├── nginx
+│   ├── Dockerfile
+│   └── nginx.conf
+├── package-lock.json
+├── package.json                   # Project root (concurrent setup)
+├── README.md                      # You're here
+└── server                         # Express backend
+    ├── .dockerignore
+    ├── data                       # Markdown prompt templates
+    │   ├── examples.md
+    │   ├── generalPrompt.md
+    │   └── internalDocs.md
+    ├── Dockerfile
+    ├── index.js
+    ├── node_modules
+    ├── package-lock.json
+    └── package.json
 ```
 
 ### Files to edit

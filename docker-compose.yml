@@ -5,16 +5,14 @@ services:
     build: ./server
     ports:
       - "5000:5000"
-    volumes:
-      - ./server:/app
-    environment:
-      - NODE_ENV=development
+    env_file:
+      - .env
 
-  frontend:
-    build: ./client
+  nginx:
+    build:
+      context: .               # Use project root as build context
+      dockerfile: nginx/Dockerfile
     ports:
-      - "3000:3000"
+      - "80:80"
     depends_on:
       - backend
-    volumes:
-      - ./client:/app

@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
+const registeredRoutes = [];
 app.use(cors()); // Enables CORS for all routes
 
 // Middleware to parse JSON bodies
@@ -17,8 +18,6 @@ app.use(express.json());
 // to work with files in the same directory (index.html)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-app.use(express.static(path.join(__dirname)));
 
 // Get Gemini module from environment variable or use default
 const geminiModule = process.env.GEMINI_MODULE || 'gemini-2.0-flash';
@@ -34,6 +33,7 @@ function handleErrors(response) {
     }
     return response;
 };
+
 // Cache internal docs
 let internalDocumentation = '';
 let examples = '';
@@ -74,6 +74,7 @@ function generateSystemPrompt() {
 };
 
 // Route to interact with the Gemini Pro API
+registeredRoutes.push({ method: 'POST', path: '/api/data' });
 app.post('/api/data', async (req, res) => {
     try {
         const { data } = req.body;
@@ -121,7 +122,6 @@ app.post('/api/data', async (req, res) => {
         res.status(500).json({ error: error.message || 'Internal server error' });
     }
 });
-
 
 app.listen(process.env.PORT || 5000, () => {
     console.log(`✅ Microservice listening on port ${process.env.PORT || 5000}`);
