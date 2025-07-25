@@ -8,16 +8,13 @@ import { dirname } from 'path';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const app = express();
-const registeredRoutes = [];
-app.use(cors()); // Enables CORS for all routes
-
-// Middleware to parse JSON bodies
-app.use(express.json());
-
 // to work with files in the same directory (index.html)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+const app = express();
+app.use(cors()); // Enables CORS for all routes
+app.use(express.json()); // Middleware to parse JSON bodies
 
 // Get Gemini module from environment variable or use default
 const geminiModule = process.env.GEMINI_MODULE || 'gemini-2.0-flash';
@@ -120,9 +117,21 @@ app.post('/api/data', async (req, res) => {
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: error.message || 'Internal server error' });
+// Serve static files from the React app after API routes
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
+}
+
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('/{*any}', (req, res, next) => {
+    if (process.env.NODE_ENV === 'production') {
+        res.sendFile(path.join(__dirname, '..', 'client', 'dist', 'index.html'));
+        return;
     }
+    return next(); // Let the development server handle this in development mode
 });
 
-app.listen(process.env.PORT || 5000, () => {
-    console.log(`✅ Microservice listening on port ${process.env.PORT || 5000}`);
+app.listen(process.env.PORT ?? 8080, () => {
+    console.log(`✅ Microservice listening on port ${process.env.PORT ?? 8080}`);
 });
