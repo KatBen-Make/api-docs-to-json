@@ -19,8 +19,6 @@ export default function App() {
   } = useApi();
 
   const handleCopy = () => {
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
     navigator.clipboard.writeText(response);
     toast.success('Response copied to clipboard!');
   };
@@ -72,12 +70,10 @@ export default function App() {
         {response && (
           <div className="response-container">
             <div className="response-header">
-              <p>Response from Gemini AI:</p>
-              <ContentCopy
-                className={`copy-icon ${copied ? 'copied' : ''}`}
-                onClick={handleCopy}
-                title={copied ? 'Copied!' : 'Copy JSON'}
-              />
+              <p>{loading ? <CircularProgress /> : 'Response from Gemini AI:'}</p>
+              <button onClick={handleCopy} disabled={loading}>
+                <ContentCopy />
+              </button>
             </div>
             <pre className="json-display">{response}</pre>
           </div>
