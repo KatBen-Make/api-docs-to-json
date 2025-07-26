@@ -1,13 +1,13 @@
 # API Docs to JSON (Gemini AI)
 
-This project is a **React + Express + Vite** application that lets users paste API documentation and receive structured JSON, powered by **Google's Gemini API**. Also using **docker**, **nginx**, **nodemon**.
+This project is a **React + Express + Vite** application that lets users paste API documentation and receive structured JSON, powered by **Google's Gemini API**. Also using **docker** and **nodemon**.
 
 ---
 
 ## 📦 Tech Stack
 
 - **Frontend**: [React](https://react.dev/), [Vite](https://vitejs.dev/)
-- **Backend**: [Node.js](https://nodejs.org/), [Express](https://expressjs.com/), Docker, Nginx
+- **Backend**: [Node.js](https://nodejs.org/), [Express](https://expressjs.com/), Docker
 - **UI**: [MUI Icons](https://mui.com/material-ui/material-icons/)
 - **AI Model**: [Google Gemini API](https://ai.google.dev/)
 
@@ -43,13 +43,16 @@ GEMINI_MODULE = gemini-2.0-flash
 ``` bash
 npm run dev
 ```
-Frontend: http://localhost:5173
-Backend: http://localhost:5000
+Frontend: http://localhost:3000
+Backend: http://localhost:8080
 
 ### 5. In Docker
-Nginx: http://localhost
-Frontend: http://localhost:3000
-Backend: http://localhost:5000
+To build and run the application using Docker, use the following commands:
+```bash
+docker build -t api-docs-to-json .
+docker run -p 8080:8080 -it api-docs-to-json
+```
+The application will be available at http://localhost:8080.
 
 ### ✨ Features
 - Paste unstructured API documentation
@@ -66,27 +69,23 @@ api-docs-to-json
 ├── client                        # React frontend (Vite)
 │   ├── .dockerignore
 │   ├── .gitignore
-│   ├── dist
-│   │   ├── assets
-│   │   └── index.html
-│   ├── Dockerfile
 │   ├── eslint.config.js
 │   ├── index.html
-│   ├── node_modules
 │   ├── package-lock.json
 │   ├── package.json
-│   ├── public
 │   ├── README.md
 │   ├── src
 │   │   ├── App.css
 │   │   ├── App.jsx
+│   │   ├── contexts
+│   │   │   ├── ApiContext.jsx
+│   │   │   └── ApiProvider.jsx
+│   │   ├── hooks
+│   │   │   └── useApi.js
 │   │   ├── index.css
 │   │   └── main.jsx
 │   └── vite.config.js
-├── docker-compose.yml             # Docker
-├── nginx
-│   ├── Dockerfile
-│   └── nginx.conf
+├── Dockerfile                    # Docker configuration
 ├── package-lock.json
 ├── package.json                   # Project root (concurrent setup)
 ├── README.md                      # You're here
@@ -96,12 +95,21 @@ api-docs-to-json
     │   ├── examples.md
     │   ├── generalPrompt.md
     │   └── internalDocs.md
-    ├── Dockerfile
     ├── index.js
-    ├── node_modules
     ├── package-lock.json
     └── package.json
 ```
+
+---
+
+## 📦 Tech Stack
+
+- **Frontend**: [React](https://react.dev/), [Vite](https://vitejs.dev/)
+- **Backend**: [Node.js](https://nodejs.org/), [Express](https://expressjs.com/), Docker, Nginx
+- **UI**: [MUI Icons](https://mui.com/material-ui/material-icons/)
+- **AI Model**: [Google Gemini API](https://ai.google.dev/)
+
+---
 
 ### Files to edit
 
