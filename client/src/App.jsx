@@ -1,80 +1,22 @@
-import React, { useState, useEffect } from 'react';
 import { ContentCopy } from '@mui/icons-material';
+import { CircularProgress } from '@mui/material';
 import './App.css';
+import { useApi } from './hooks/useApi';
+import toast from 'react-hot-toast';
 
 export default function App() {
-  const [prompt, setPrompt] = useState('');
-  const [comment, setComment] = useState('');
-  const [response, setResponse] = useState('');
-  const [copied, setCopied] = useState(false);
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-
-  useEffect(() => {
-    setHistory([]);
-    setResponse('');
-  }, []);
-
-  const sendPrompt = async () => {
-    setLoading(true);
-
-    const payload = {
-      data: {
-        prompt,
-        comment,
-        history,
-      },
-    };
-    try {
-      const res = await fetch('/api/data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: { prompt, comment, history } }),
-      });
-      const json = await res.json();
-      setResponse(json.response);
-
-      // Append new user + model messages to history
-      setHistory([
-        ...history,
-        { role: 'user', parts: [{ text: prompt }] },
-        { role: 'model', parts: [{ text: json.response }] }
-      ]);
-    } catch (error) {
-      setResponse(`Error: ${error.message}`);
-    }
-    setLoading(false);
-  };
-
-  const sendComment = async () => {
-    if (!comment.trim()) return;
-    setLoading(true);
-    const newHistory = [
-      ...history,
-      { role: 'user', parts: [{ text: comment }] }
-    ];
-
-    try {
-      const res = await fetch('/api/data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: { prompt, comment, history: newHistory } }),
-      });
-      const json = await res.json();
-      setResponse(json.response);
-
-      // Update history with new comment and AI reply
-      setHistory([
-        ...newHistory,
-        { role: 'model', parts: [{ text: json.response }] }
-      ]);
-    } catch (error) {
-      setResponse(`Error: ${error.message}`);
-    }
-    setComment('');
-    setLoading(false);
-  };
+  const {
+    prompt,
+    setPrompt,
+    comment,
+    setComment,
+    response,
+    history,
+    loading,
+    sendPrompt,
+    sendComment,
+    clearHistory,
+  } = useApi();
 
   const handleCopy = () => {
     let cleanCopy = response.replace(/^```json\s*/, '').replace(/```$/, '');
@@ -125,7 +67,7 @@ export default function App() {
             rows={2}
           />
           <div className="button-wrapper">
-            <button onClick={() => setHistory([])} style={{ marginLeft: '1rem' }}>
+            <button onClick={clearHistory} style={{ marginLeft: '1rem' }}>
               Clear History
             </button>
 
