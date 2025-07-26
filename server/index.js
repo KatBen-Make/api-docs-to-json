@@ -63,6 +63,9 @@ app.post('/api/data', async (req, res) => {
             ...history,
             { role: 'user', parts: [{ text: currentInput }] }
         ],
+        generationConfig: {
+            responseMimeType: 'application/json',
+        },
     };
 
     const requestOptions = {

@@ -19,19 +19,11 @@ export default function App() {
   } = useApi();
 
   const handleCopy = () => {
-    let cleanCopy = response.replace(/^```json\s*/, '').replace(/```$/, '');
-    navigator.clipboard.writeText(cleanCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(response);
+    toast.success('Response copied to clipboard!');
   };
-
-  // Try to pretty format JSON response or fallback to plain text
-  let prettyResponse = response.replace('```json', '').replace('```', '').split(/\r?\n/).filter(line => line.trim() !== '').join('\n');
-  try {
-    prettyResponse = JSON.stringify(JSON.parse(response), null, 2);
-  } catch {
-    // Not valid JSON, keep as-is
-  }
 
   return (
     <div className="container">
@@ -87,7 +79,7 @@ export default function App() {
                 title={copied ? 'Copied!' : 'Copy JSON'}
               />
             </div>
-            <pre className="json-display">{prettyResponse}</pre>
+            <pre className="json-display">{response}</pre>
           </div>
         )}
       </div>
