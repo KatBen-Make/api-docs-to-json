@@ -17,106 +17,87 @@ app.use(cors()); // Enables CORS for all routes
 app.use(express.json()); // Middleware to parse JSON bodies
 
 // Get Gemini module from environment variable or use default
-const geminiModule = process.env.GEMINI_MODULE || 'gemini-2.0-flash';
+const geminiModule = process.env.GEMINI_MODULE ?? 'gemini-2.0-flash';
 
 const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModule}:generateContent`;
 
-// Basic error handling function
-function handleErrors(response) {
-    if (!response.ok) {
-        return response.json().then(errorData => {
-            throw new Error(`HTTP error! status: ${response.status}, details: ${JSON.stringify(errorData)}`);
-        });
-    }
-    return response;
-};
-
-// Cache internal docs
-let internalDocumentation = '';
-let examples = '';
-let generalPrompt = ''
-
-// Load internal documentation
+// Load internal documentation 
+let systemPrompt = '';
 try {
-    internalDocumentation = fs.readFileSync(
+    const internalDocumentation = fs.readFileSync(
         path.join(__dirname, './data/internalDocs.md'),
         'utf8'
     );
-    examples = fs.readFileSync(
+    const examples = fs.readFileSync(
         path.join(__dirname, './data/examples.md'),
         'utf8'
     );
-    generalPrompt = fs.readFileSync(
+    const generalPrompt = fs.readFileSync(
         path.join(__dirname, './data/generalPrompt.md'),
         'utf8'
     );
     console.log('✅ Internal documentation, examples and general prompt loaded successfully');
 
+    systemPrompt = `${generalPrompt}
+
+    INTERNAL DOCUMENTATION:
+    ${internalDocumentation}
+
+    Examples:
+    ${examples}`;
 } catch (error) {
     console.error('❌ Error loading internal documentation:', error);
-    internalDocumentation = 'Failed to load internal documentation.';
-    examples = 'Failed to load examples.';
     process.exit(1); // Stop the server from starting if critical files are missing
 }
 
-function generateSystemPrompt() {
-    return `${generalPrompt}
-  
-  INTERNAL DOCUMENTATION:
-  ${internalDocumentation}
-  
-  Examples:
-  ${examples}`
-
-};
-
 // Route to interact with the Gemini Pro API
-registeredRoutes.push({ method: 'POST', path: '/api/data' });
 app.post('/api/data', async (req, res) => {
-    try {
-        const { data } = req.body;
-        const { prompt, comment = '', history = [] } = data;
+    const { data } = req.body;
+    const { prompt, comment = '', history = [] } = data;
 
-        const currentInput = comment || prompt;
+    const currentInput = comment || prompt;
 
-        const requestBody = {
-            contents: [
-                { role: 'model', parts: [{ text: generateSystemPrompt() }] },
-                ...history,
-                { role: 'user', parts: [{ text: currentInput }] }
-            ],
-        };
-
-        const requestOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-goog-api-key': process.env.API_KEY,
-            },
-            body: JSON.stringify(requestBody),
-        };
-
-        const response = await fetch(API_ENDPOINT, requestOptions)
-            .then(handleErrors);
-
-        const result = await response.json();
-
-        let responseText = "";
-        if (result?.candidates?.[0]?.content?.parts?.[0]?.text) {
-            responseText = result.candidates[0].content.parts[0].text;
-        }
-
-        // Append the user's latest input (prompt or comment)
-        const updatedHistory = [
+    const requestBody = {
+        contents: [
+            { role: 'model', parts: [{ text: systemPrompt }] },
             ...history,
-            { role: 'user', parts: [{ text: currentInput }] },
-            { role: 'model', parts: [{ text: responseText }] }
-        ];
+            { role: 'user', parts: [{ text: currentInput }] }
+        ],
+    };
 
-        res.json({ response: responseText, history: updatedHistory });
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': process.env.API_KEY,
+        },
+        body: JSON.stringify(requestBody),
+    };
+
+    let responseText = '';
+    try {
+        const response = await fetch(API_ENDPOINT, requestOptions);
+        const result = await response.json();
+        if (!response.ok) {
+            res.status(400).json({ error: 'Error fetching from Gemini API', details: result.error.message });
+            return;
+        }
+        responseText = result?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
     } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: error.message || 'Internal server error' });
+        res.status(500).json({ error: 'Internal Server Error', details: error });
+        return;
+    }
+
+    // Append the user's latest input (prompt or comment)
+    const updatedHistory = [
+        ...history,
+        { role: 'user', parts: [{ text: currentInput }] },
+        { role: 'model', parts: [{ text: responseText }] }
+    ];
+
+    res.json({ responseText, updatedHistory });
+});
+
 // Serve static files from the React app after API routes
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
