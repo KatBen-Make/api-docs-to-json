@@ -14,9 +14,10 @@ The resulting JSON have to follow these rules:
                 "url": "rpc://recordSearch",
                 "parameters": [
                     {
-                        "type": "html",
-                        "label": "<div style='color: #205671; background: #E8F6FF; border-radius: 5px; padding: 12px 16px 12px 16px; font-size: 12px;'>If you don't see the result you're looking for, try more specific search criteria.</div>"
-                    },
+                        "type": "banner",
+                        "text": "If you don't see the result you're looking for, try more specific search criteria.",
+                        "theme": "info"
+                     },
                     {
                         "name": "query",
                         "type": "text",
@@ -60,6 +61,31 @@ The resulting JSON have to follow these rules:
                 {
                     "label": "L",
                     "value": "l"
+                }
+            ]
+        },
+        {
+            "name": "colorCombination",
+            "type": "select",
+            "label": "Select color combination",
+            "help":"Select one or multiple colors.",
+            "multiple":true,
+            "options": [
+                {
+                    "label": "Blue",
+                    "value": "blue"
+                },
+                {
+                    "label": "White",
+                    "value": "white"
+                },
+                {
+                    "label": "Black",
+                    "value": "black"
+                },
+                {
+                    "label": "Green",
+                    "value": "green"
                 }
             ]
         },
@@ -176,7 +202,7 @@ Available types of parameters are:
 * path - a path to a file or a folder
 * pkey - private key in PEM format
 * port - a whole number in the range from 1 to 65535
-* select - a selection from predefined values
+* select - a selection from predefined values. Can be a single select or multiselect with nested parameter "multiple": true
 * text - text value
 * time - time in hh:mm or hh:mm:ss or hh:mm:ss.nnn format
 * timestamp - unix timestamp
@@ -226,8 +252,9 @@ For parameters where ID is needed (invoiceId, clientId etc.) we should use ID fi
             "url": "rpc://searchInvoices",
             "parameters": [
                 {
-                    "type": "html",
-                    "label": "<div style='color: #205671; background: #E8F6FF; border-radius: 5px; padding: 12px 16px 12px 16px; font-size: 12px;'>If you don't see the result you're looking for, try more specific search criteria.</div>"
+                    "type": "banner",
+                    "text": "If you don't see the result you're looking for, try more specific search criteria.",
+                    "theme": "info"
                 },
                 {
                     "name": "query",
