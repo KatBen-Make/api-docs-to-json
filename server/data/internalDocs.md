@@ -202,7 +202,7 @@ Available types of parameters are:
 * path - a path to a file or a folder
 * pkey - private key in PEM format
 * port - a whole number in the range from 1 to 65535
-* select - a selection from predefined values. Can be a single select or multiselect with nested parameter "multi": true
+* select - a selection from predefined values. Can be a single select or multiselect with nested parameter "multiple": true
 * text - text value
 * time - time in hh:mm or hh:mm:ss or hh:mm:ss.nnn format
 * timestamp - unix timestamp
