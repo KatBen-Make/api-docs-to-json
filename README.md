@@ -33,7 +33,6 @@ This installs dependencies for both client and server via root-level package.jso
 Create a .env file in the project root:
 
 ```
-PORT=5000
 API_KEY=your_google_gemini_api_key_here
 GEMINI_MODULE = gemini-2.0-flash
 ```
