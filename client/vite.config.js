@@ -7,8 +7,9 @@ export default defineConfig({
     include: ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled']
   },
   server: {
+    port: 3000,
     proxy: {
-      '/api': 'http://localhost:5000',
+      '/api': 'http://localhost:8080',
     },
   },
 });
