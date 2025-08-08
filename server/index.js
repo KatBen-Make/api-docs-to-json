@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import dotenv from 'dotenv';
+import authRoutes from './src/routes/auth.js';
 dotenv.config();
 
 // to work with files in the same directory (index.html)
@@ -15,6 +16,7 @@ const __dirname = dirname(__filename);
 const app = express();
 app.use(cors()); // Enables CORS for all routes
 app.use(express.json()); // Middleware to parse JSON bodies
+app.use('/api/auth', authRoutes);
 
 // Get Gemini module from environment variable or use default
 const geminiModule = process.env.GEMINI_MODULE ?? 'gemini-2.0-flash';
