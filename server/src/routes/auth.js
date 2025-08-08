@@ -16,7 +16,9 @@ router.post('/login', async (req, res) => {
                 Authorization: `Token ${token}`
             }
         });
-        res.json(response.data);
+        // Only return necessary user fields to the client
+        const { id, name, email } = response.data;
+        res.json({ id, name, email });
     } catch (error) {
         if (error.response) {
             res.status(error.response.status).json({
