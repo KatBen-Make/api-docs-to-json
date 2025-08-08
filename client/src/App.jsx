@@ -2,6 +2,7 @@ import { ContentCopy } from '@mui/icons-material';
 import { CircularProgress } from '@mui/material';
 import './App.css';
 import { useApi } from './hooks/useApi';
+import { useAuth } from './hooks/useAuth';
 import toast from 'react-hot-toast';
 import AuthModal from './components/auth/AuthModal';
 import UserDropdown from './components/auth/UserDropdown';
@@ -14,17 +15,22 @@ export default function App() {
     setComment,
     response,
     history,
-    loading,
+    loading: apiLoading,
     sendPrompt,
     sendComment,
     clearHistory,
-    isAuthenticated,
   } = useApi();
+
+  const { isAuthenticated, authChecked, loading: authLoading } = useAuth();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(response);
     toast.success('Response copied to clipboard!');
   };
+
+  if (!authChecked || authLoading) {
+    return <div className="loading-container"><CircularProgress /></div>;
+  }
 
   if (!isAuthenticated) {
     return <AuthModal />;
@@ -47,8 +53,8 @@ export default function App() {
             rows={6}
           />
           <div className="button-wrapper">
-            <button onClick={sendPrompt} disabled={loading}>
-              {loading ? 'Sending...' : 'Send Prompt'}
+            <button onClick={sendPrompt} disabled={apiLoading}>
+              {apiLoading ? 'Sending...' : 'Send Prompt'}
             </button>
           </div>
           {/* Show previous user comments */}
@@ -71,8 +77,8 @@ export default function App() {
               Clear History
             </button>
 
-            <button onClick={sendComment} disabled={loading || !comment}>
-              {loading ? 'Sending...' : 'Send Comment'}
+            <button onClick={sendComment} disabled={apiLoading || !comment}>
+              {apiLoading ? 'Sending...' : 'Send Comment'}
             </button>
           </div>
         </div>
@@ -80,8 +86,8 @@ export default function App() {
         {response && (
           <div className="response-container">
             <div className="response-header">
-              <p>{loading ? <CircularProgress /> : 'Response from Gemini AI:'}</p>
-              <button onClick={handleCopy} disabled={loading}>
+              <p>{apiLoading ? <CircularProgress /> : 'Response from Gemini AI:'}</p>
+              <button onClick={handleCopy} disabled={apiLoading}>
                 <ContentCopy />
               </button>
             </div>

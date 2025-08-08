@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import './AuthModal.css';
-import { useApi } from '../../hooks/useApi';
+import { useAuth } from '../../hooks/useAuth';
 
 const AuthModal = () => {
     const [email, setEmail] = useState('');
     const [token, setToken] = useState('');
     const [error, setError] = useState('');
-    const { login } = useApi();
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
