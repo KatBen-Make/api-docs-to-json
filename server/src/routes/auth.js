@@ -16,9 +16,15 @@ router.post('/login', async (req, res) => {
                 Authorization: `Token ${token}`
             }
         });
+
+        const { email } = response.data.authUser;
+        if (!email.endsWith('@make.com')) {
+            return res.status(403).json({ error: 'Access denied. Only make.com users are allowed.' });
+        }
+
         // Only return necessary user fields to the client
-        const { id, name, email } = response.data;
-        res.json({ id, name, email });
+        const { id, name } = response.data.authUser;
+        res.json({ authUser: { id, name, email } });
     } catch (error) {
         if (error.response) {
             res.status(error.response.status).json({
