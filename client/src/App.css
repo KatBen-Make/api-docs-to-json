@@ -94,10 +94,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-button:hover:not(:disabled) {
-  background-color: #0051a3;
-}
-
 .response-container {
   width: 100%;
   background: #fff;
@@ -172,3 +168,22 @@ pre {
 .logout-btn:hover {
   background-color: #c53030;
 }
+
+.copy-button {
+  background: transparent;
+  border: none;
+  color: #1a3c63;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 4px;
+  margin: 0;
+}
+
+.copy-button:hover {
+  background: transparent;
+  color: #4285f4;
+}
+

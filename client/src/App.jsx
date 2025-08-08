@@ -78,7 +78,7 @@ export default function App() {
             </button>
 
             <button onClick={sendComment} disabled={apiLoading || !comment}>
-              {apiLoading ? 'Sending...' : 'Send Comment'}
+              {apiLoading ? 'Sending...' : 'Send Comments'}
             </button>
           </div>
         </div>
@@ -86,9 +86,9 @@ export default function App() {
         {response && (
           <div className="response-container">
             <div className="response-header">
-              <p>{apiLoading ? <CircularProgress /> : 'Response from Gemini AI:'}</p>
-              <button onClick={handleCopy} disabled={apiLoading}>
-                <ContentCopy />
+              <p>{apiLoading ? <CircularProgress size={24} /> : 'Response from Gemini AI:'}</p>
+              <button onClick={handleCopy} disabled={apiLoading} className="copy-button">
+                <ContentCopy fontSize="small" />
               </button>
             </div>
             <pre className="json-display">{response}</pre>
