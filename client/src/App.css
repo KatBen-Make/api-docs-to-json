@@ -104,24 +104,10 @@ textarea:focus {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.clear-all-button {
-  color: #dc3545;
-}
-
-.clear-comments-button {
-  color: #fd7e14;
-}
-
-.send-comment-button {
-  color: #28a745;
-  transform: scale(1.2);
-}
-
 .icon-button:disabled {
   color: #6c757d;
   cursor: not-allowed;
 }
-
 
 .response-container {
   width: 100%;
