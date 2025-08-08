@@ -37,6 +37,7 @@ export const ApiProvider = ({ children }) => {
             toast.error(String(error));
             console.error(error);
         }
+        setComment('');
         setLoading(false);
     };
 
