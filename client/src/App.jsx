@@ -1,5 +1,8 @@
 import { ContentCopy } from '@mui/icons-material';
 import { CircularProgress } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import CommentsDisabledIcon from '@mui/icons-material/CommentsDisabled';
 import './App.css';
 import { useApi } from './hooks/useApi';
 import { useAuth } from './hooks/useAuth';
@@ -19,6 +22,7 @@ export default function App() {
     sendPrompt,
     sendComment,
     clearHistory,
+    clearAll,
   } = useApi();
 
   const { isAuthenticated, authChecked, loading: authLoading } = useAuth();
@@ -52,11 +56,6 @@ export default function App() {
             onChange={(e) => setPrompt(e.target.value)}
             rows={6}
           />
-          <div className="button-wrapper">
-            <button onClick={sendPrompt} disabled={apiLoading}>
-              {apiLoading ? 'Sending...' : 'Send Prompt'}
-            </button>
-          </div>
           {/* Show previous user comments */}
           <div className="conversation-history">
             {history
@@ -65,7 +64,6 @@ export default function App() {
                 <div key={i} className="comment-entry">💬 {entry.parts[0]?.text}</div>
               ))}
           </div>
-
           <textarea
             placeholder="Add any comments here..."
             value={comment}
@@ -73,12 +71,29 @@ export default function App() {
             rows={2}
           />
           <div className="button-wrapper">
-            <button onClick={clearHistory} style={{ marginLeft: '1rem' }}>
-              Clear History
+            <button
+              onClick={clearAll}
+              className="icon-button clear-all-button"
+              title="Clear All"
+              disabled={history.length === 0}
+            >
+              <RefreshIcon sx={{ color: "red" }} />
             </button>
-
-            <button onClick={sendComment} disabled={apiLoading || !comment}>
-              {apiLoading ? 'Sending...' : 'Send Comments'}
+            <button
+              onClick={clearHistory}
+              className={`icon-button clear-comments-button ${history.length <= 2 ? 'disabled' : ''}`}
+              disabled={history.length <= 2}
+              title="Clear Comments"
+            >
+              <CommentsDisabledIcon sx={{ color: "orange" }} />
+            </button>
+            <button
+              onClick={history.length === 0 ? sendPrompt : sendComment}
+              disabled={apiLoading || (history.length === 0 ? !prompt : !comment)}
+              className="icon-button send-comment-button"
+              title={history.length === 0 ? "Send" : "Send Comment"}
+            >
+              <SendIcon sx={{ color: "green" }} />
             </button>
           </div>
         </div>
