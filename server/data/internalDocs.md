@@ -68,7 +68,7 @@ The resulting JSON have to follow these rules:
             "name": "colorCombination",
             "type": "select",
             "label": "Select color combination",
-            "help":"Select one or multiple colors.",
+            "help": "Select one or multiple colors.",
             "multiple":true,
             "options": [
                 {
