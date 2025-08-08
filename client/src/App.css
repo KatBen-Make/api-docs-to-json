@@ -9,9 +9,17 @@ body {
   /* Horizontal center */
 }
 
+html {
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  width: 90%;
+ }
+
 .container {
   width: 100%;
-  max-width: 1200px;
   padding: 2rem;
   box-sizing: border-box;
   display: flex;
@@ -74,28 +82,31 @@ textarea:focus {
 
 .button-wrapper {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 1rem;
 }
 
-button {
-  padding: 0.75rem 1.5rem;
-  margin: 0.75rem;
+.icon-button {
+  background: none;
   border: none;
-  background: linear-gradient(to right, #0077cc, #005fa3);
-  color: white;
-  font-weight: bold;
   cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.3s ease, box-shadow 0.3s ease;
+  padding: 0.5rem;
+  border-radius: 50%;
+  margin: 0 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-button:disabled {
-  background-color: #999;
+.icon-button:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.icon-button:disabled {
+  color: #6c757d;
   cursor: not-allowed;
-}
-
-button:hover:not(:disabled) {
-  background-color: #0051a3;
 }
 
 .response-container {
@@ -171,4 +182,22 @@ pre {
 
 .logout-btn:hover {
   background-color: #c53030;
+}
+
+.copy-button {
+  background: transparent;
+  border: none;
+  color: #1a3c63;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 4px;
+  margin: 0;
+}
+
+.copy-button:hover {
+  background: transparent;
+  color: #4285f4;
 }

@@ -37,6 +37,7 @@ export const ApiProvider = ({ children }) => {
             toast.error(String(error));
             console.error(error);
         }
+        setComment('');
         setLoading(false);
     };
 
@@ -75,6 +76,11 @@ export const ApiProvider = ({ children }) => {
     };
 
     const clearHistory = () => {
+        setHistory(history.slice(0, 2));
+        setComment('');
+    };
+
+    const clearAll = () => {
         setHistory([]);
         setResponse('');
         setPrompt('');
@@ -92,6 +98,7 @@ export const ApiProvider = ({ children }) => {
         sendPrompt,
         sendComment,
         clearHistory,
+        clearAll,
     };
 
     return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>;
