@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useApi } from '../../hooks/useApi';
+import { useAuth } from '../../hooks/useAuth';
 import './UserDropdown.css';
 import { AccountCircle } from '@mui/icons-material';
 
 const UserDropdown = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const { user, logout } = useApi();
+    const { user, logout } = useAuth();
     const dropdownRef = useRef(null);
 
     const toggleDropdown = () => {
