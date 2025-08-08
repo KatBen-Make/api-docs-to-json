@@ -151,3 +151,24 @@ pre {
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logout-btn {
+  padding: 0.5rem 1rem;
+  background-color: #e53e3e;
+}
+
+.logout-btn:hover {
+  background-color: #c53030;
+}
