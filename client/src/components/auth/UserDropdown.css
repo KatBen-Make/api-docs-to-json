@@ -1,0 +1,48 @@
+.user-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.user-icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #1a3c63;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+    width: 200px;
+    padding: 0.5rem 0;
+}
+
+.user-info-dropdown {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #eee;
+    font-weight: bold;
+    color: #333;
+}
+
+.logout-button-dropdown {
+    display: block;
+    width: 70%;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #e53e3e;
+    box-sizing: border-box;
+}
+
+.logout-button-dropdown:hover {
+    background-color: #f9f9f9;
+}

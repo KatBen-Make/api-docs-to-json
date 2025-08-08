@@ -4,6 +4,7 @@ import './App.css';
 import { useApi } from './hooks/useApi';
 import toast from 'react-hot-toast';
 import AuthModal from './components/auth/AuthModal';
+import UserDropdown from './components/auth/UserDropdown';
 
 export default function App() {
   const {
@@ -18,20 +19,12 @@ export default function App() {
     sendComment,
     clearHistory,
     isAuthenticated,
-    logout,
-    user,
-    authChecked,
   } = useApi();
 
   const handleCopy = () => {
-// ... existing code ...
     navigator.clipboard.writeText(response);
     toast.success('Response copied to clipboard!');
   };
-
-  if (!authChecked) {
-    return null; // or a loading spinner
-  }
 
   if (!isAuthenticated) {
     return <AuthModal />;
@@ -41,10 +34,7 @@ export default function App() {
     <div className="container">
       <div className="header">
         <h1>Generate Make JSON</h1>
-        <div className="user-info">
-          {user && <span>Welcome, {user.name}</span>}
-          <button onClick={logout} className="logout-btn">Logout</button>
-        </div>
+        <UserDropdown />
       </div>
       <h3>Convert API documentation to MAKE mappable parameters with Gemini AI</h3>
       <div className="flex-layout">
