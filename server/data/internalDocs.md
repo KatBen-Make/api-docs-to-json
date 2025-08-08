@@ -68,7 +68,7 @@ The resulting JSON have to follow these rules:
             "name": "colorCombination",
             "type": "select",
             "label": "Select color combination",
-            "help":"Select one or multiple colors.",
+            "help": "Select one or multiple colors.",
             "multiple":true,
             "options": [
                 {
@@ -348,3 +348,17 @@ The hint for the parameter in "help" should follow these rules:
 1. It should use markdown formatting: backtick for examples of values: "Must be a decimal number. For example, `1.2`." and bold formatting the labels of the parameters: "Either **Name** or **Email** value is required."
 1. It should use markdown formatting for links.
 
+## List and Search modules
+
+The mappable parameters for List or Search modules should always have parameter "limit":
+```
+{
+    "name": "limit",
+    "type": "uinteger",
+    "label": "Limit",
+    "default": 10,
+    "help": "The maximum number of results to be worked with during one execution cycle."
+}
+```
+
+The parameters used for pagination, such as page, pageSize, offset  etc. should not be listed in the mappable parameters json.
