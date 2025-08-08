@@ -53,7 +53,6 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('authEmail');
         toast.success('Successfully logged out!');
-        window.location.reload();
     };
 
     const value = {
