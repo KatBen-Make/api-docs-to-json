@@ -55,6 +55,7 @@ export default function App() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             rows={6}
+            disabled={apiLoading}
           />
           {/* Show previous user comments */}
           <div className="conversation-history">
@@ -69,6 +70,7 @@ export default function App() {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={2}
+            disabled={apiLoading}
           />
           <div className="button-wrapper">
             <button
@@ -93,20 +95,41 @@ export default function App() {
               className="icon-button send-comment-button"
               title={history.length === 0 ? "Send" : "Send Comment"}
             >
-              <SendIcon sx={{ color: "green" }} />
+              {apiLoading ? (
+                <CircularProgress size={20} sx={{ color: "green" }} />
+              ) : (
+                <SendIcon sx={{ color: "green" }} />
+              )}
             </button>
           </div>
         </div>
 
         {response && (
-          <div className="response-container">
+          <div className={`response-container ${apiLoading ? 'loading' : ''}`}>
             <div className="response-header">
-              <p>{apiLoading ? <CircularProgress size={24} /> : 'Response from Gemini AI:'}</p>
+              <p>Response from Gemini AI:</p>
               <button onClick={handleCopy} disabled={apiLoading} className="copy-button">
                 <ContentCopy fontSize="small" />
               </button>
             </div>
-            <pre className="json-display">{response}</pre>
+            {apiLoading ? (
+              <div className="loading-overlay">
+                <CircularProgress size={40} />
+                <p>Generating response...</p>
+              </div>
+            ) : (
+              <pre className="json-display">{response}</pre>
+            )}
+          </div>
+        )}
+
+        {/* Show loading state when there's no response yet but API is loading */}
+        {!response && apiLoading && (
+          <div className="response-container loading">
+            <div className="loading-overlay">
+              <CircularProgress size={40} />
+              <p>Generating response...</p>
+            </div>
           </div>
         )}
       </div>
