@@ -15,6 +15,7 @@ export const ApiProvider = ({ children }) => {
             const response = await fetch('/api/data', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include', // Include cookies for authentication
                 body: JSON.stringify({ data: { prompt, comment, history } }),
             });
 
@@ -49,6 +50,7 @@ export const ApiProvider = ({ children }) => {
             const response = await fetch('/api/data', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include', // Include cookies for authentication
                 body: JSON.stringify({ data: { prompt, comment, history } }),
             });
 

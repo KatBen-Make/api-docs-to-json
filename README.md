@@ -34,7 +34,7 @@ Create a .env file in the project root:
 
 ```
 API_KEY=your_google_gemini_api_key_here
-GEMINI_MODULE = gemini-2.0-flash
+GEMINI_MODULE = gemini-2.5-flash
 ```
 🔐 Never commit .env files with secrets to version control.
 

@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import dotenv from 'dotenv';
+import cookieSession from 'cookie-session';
 import authRoutes from './src/routes/auth.js';
 dotenv.config();
 
@@ -14,7 +15,27 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-app.use(cors()); // Enables CORS for all routes
+
+// Configure cookie-session middleware
+if (!process.env.SESSION_SECRET) {
+    console.error('❌ Error loading session secret');
+    process.exit(1); // Stop the server from starting if session secret is missing
+}
+app.use(cookieSession({
+    name: 'session',
+    keys: [process.env.SESSION_SECRET],
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+    httpOnly: true, // Prevent XSS attacks
+    sameSite: 'strict' // CSRF protection
+}));
+
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production'
+        ? process.env.FRONTEND_URL
+        : 'http://localhost:8080',
+    credentials: true // Allow cookies to be sent
+})); // Enables CORS for all routes
 app.use(express.json()); // Middleware to parse JSON bodies
 app.use('/api/auth', authRoutes);
 
@@ -52,8 +73,16 @@ try {
     process.exit(1); // Stop the server from starting if critical files are missing
 }
 
+// Authentication middleware
+const requireAuth = (req, res, next) => {
+    if (!req.session || !req.session.user) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+    next();
+};
+
 // Route to interact with the Gemini Pro API
-app.post('/api/data', async (req, res) => {
+app.post('/api/data', requireAuth, async (req, res) => {
     const { data } = req.body;
     const { prompt, comment = '', history = [] } = data;
 
