@@ -43,7 +43,7 @@ router.post('/login', async (req, res) => {
 
 // Logout endpoint
 router.post('/logout', (req, res) => {
-    req.session = null; // Clear the session
+    req.session.destroy(); // Clear the session
     res.json({ success: true, message: 'Logged out successfully' });
 });
 
@@ -52,7 +52,7 @@ router.get('/me', (req, res) => {
     if (!req.session || !req.session.user) {
         return res.status(401).json({ error: 'Not authenticated' });
     }
-    
+
     res.json({ user: req.session.user });
 });
 
