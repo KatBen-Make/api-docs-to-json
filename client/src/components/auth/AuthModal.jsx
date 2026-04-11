@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CircularProgress } from '@mui/material';
 import './AuthModal.css';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -6,7 +7,7 @@ const AuthModal = () => {
     const [email, setEmail] = useState('');
     const [token, setToken] = useState('');
     const [error, setError] = useState('');
-    const { login } = useAuth();
+    const { login, loading } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -51,7 +52,16 @@ const AuthModal = () => {
                         />
                     </div>
                     {error && <p className="error-message">{error}</p>}
-                    <button type="submit" className="submit-btn">Login</button>
+                    <button type="submit" className="submit-btn" disabled={loading}>
+                        {loading ? (
+                            <>
+                                <CircularProgress size={16} sx={{ marginRight: 1 }} />
+                                Logging in...
+                            </>
+                        ) : (
+                            'Login'
+                        )}
+                    </button>
                 </form>
             </div>
         </div>

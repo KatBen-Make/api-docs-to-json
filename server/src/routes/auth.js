@@ -21,9 +21,12 @@ router.post('/login', async (req, res) => {
             return res.status(403).json({ error: 'Access denied. Only make.com users are allowed.' });
         }
 
-        // Only return necessary user fields to the client
+        // Store user data in session instead of sending it back
         const { id, name } = response.data.authUser;
-        res.json({ authUser: { id, name, email } });
+        req.session.user = { id, name, email };
+
+        // Only return success status - user data is now in session
+        res.json({ success: true, user: { id, name, email } });
     } catch (error) {
         if (error.response) {
             res.status(error.response.status).json({
@@ -36,6 +39,21 @@ router.post('/login', async (req, res) => {
             res.status(500).json({ error: 'Internal server error' });
         }
     }
+});
+
+// Logout endpoint
+router.post('/logout', (req, res) => {
+    req.session.destroy(); // Clear the session
+    res.json({ success: true, message: 'Logged out successfully' });
+});
+
+// Check authentication status
+router.get('/me', (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    res.json({ user: req.session.user });
 });
 
 export default router;

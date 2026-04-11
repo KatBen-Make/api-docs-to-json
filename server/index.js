@@ -6,6 +6,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import dotenv from 'dotenv';
+import session from 'express-session';
+import sessionStore from 'connect-mongo';
 import authRoutes from './src/routes/auth.js';
 dotenv.config();
 
@@ -14,7 +16,52 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-app.use(cors()); // Enables CORS for all routes
+const isProduction = app.get("env") === "production";
+
+if (!process.env.SESSION_SECRET) {
+    console.error('❌ Error loading session secret');
+    process.exit(1); // Stop the server from starting if session secret is missing
+}
+
+if (!process.env.SESSION_STORE_SECRET) {
+    console.error('❌ Error loading session store secret');
+    process.exit(1); // Stop the server from starting if session store secret is missing
+}
+
+app.set("trust proxy", 1);
+
+app.use(cors({
+    origin: isProduction
+        ? process.env.FRONTEND_URL
+        : 'http://localhost:3000',
+})); // Enables CORS for all routes
+
+app.use(session({
+    resave: false,
+    rolling: false,
+    saveUninitialized: false,
+    secret: [process.env.SESSION_SECRET],
+    cookie: {
+        httpOnly: isProduction,
+        sameSite: isProduction ?? 'none',
+        maxAge: 60_000 * 60 * 24 * 7 // 7 days
+    },
+    store: sessionStore.create({
+        mongoUrl: `mongodb://${process.env.DB_HOST || "localhost"}:${process.env.DB_PORT || 27017}`,
+        dbName: process.env.DB_NAME || "api-doc-to-json",
+        mongoOptions: {
+            auth: {
+                username: process.env.DB_USER,
+                password: process.env.DB_PASS,
+            }
+        },
+        stringify: false,
+        crypto: {
+            secret: isProduction ? process.env.SESSION_STORE_SECRET : false
+        }
+    }),
+}));
+
 app.use(express.json()); // Middleware to parse JSON bodies
 app.use('/api/auth', authRoutes);
 
@@ -52,8 +99,16 @@ try {
     process.exit(1); // Stop the server from starting if critical files are missing
 }
 
+// Authentication middleware
+const requireAuth = (req, res, next) => {
+    if (!req.session || !req.session.user) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+    next();
+};
+
 // Route to interact with the Gemini Pro API
-app.post('/api/data', async (req, res) => {
+app.post('/api/data', requireAuth, async (req, res) => {
     const { data } = req.body;
     const { prompt, comment = '', history = [] } = data;
 
@@ -104,14 +159,14 @@ app.post('/api/data', async (req, res) => {
 });
 
 // Serve static files from the React app after API routes
-if (process.env.NODE_ENV === 'production') {
+if (isProduction) {
     app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 }
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('/{*any}', (req, res, next) => {
-    if (process.env.NODE_ENV === 'production') {
+    if (isProduction) {
         res.sendFile(path.join(__dirname, '..', 'client', 'dist', 'index.html'));
         return;
     }
